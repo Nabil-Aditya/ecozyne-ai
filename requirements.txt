@@ -4,5 +4,5 @@ ultralytics==8.3.20
 opencv-python-headless==4.10.0.84
 av==12.3.0
 numpy==2.3.0
-torch>=2.0.0
-torchvision>=0.15.0
+torch==2.2.2
+torchvision==0.17.2
