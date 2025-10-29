@@ -100,8 +100,10 @@ with st.spinner("🔄 Loading model..."):
 st.success("✅ Model berhasil dimuat!")
 
 # ====== Pengaturan ======
+st.sidebar.header("⚙️ Pengaturan Deteksi")
 confidence = 0.25  # Fixed confidence threshold
-show_original_class = False  # Always show mapped class only
+
+show_original_class = st.sidebar.checkbox("Tampilkan Kelas Asli", value=False)
 
 # ====== Mode Selection ======
 mode = st.radio(
@@ -137,18 +139,14 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
         # Run detection
         with st.spinner("🔍 Mendeteksi sampah..."):
             results = model(img_array, conf=confidence, verbose=False)
-            
-            # Draw detections with mapped labels
-            annotated_img = draw_detections_with_mapping(
-                img_array, results, model, show_original_class
-            )
+            annotated_img = results[0].plot()
             
             # Get detection info
             detections = results[0].boxes
         
         with col2:
             st.markdown("#### ✅ Hasil Deteksi")
-            st.image(annotated_img, channels="RGB", use_container_width=True)
+            st.image(annotated_img, channels="BGR", use_container_width=True)
         
         # Show detection details
         st.markdown("---")
@@ -186,11 +184,19 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
                 mapped_label = map_class(original_label)
                 
                 with cols[i % 4]:
-                    st.metric(
-                        label=f"Objek {i+1}",
-                        value=mapped_label,
-                        delta=f"{conf:.1%}"
-                    )
+                    if show_original_class:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}",
+                            help=f"Kelas asli: {original_label}"
+                        )
+                    else:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}"
+                        )
             
             # Detailed table
             with st.expander("📋 Lihat Detail Lengkap"):
@@ -204,10 +210,10 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
                     st.markdown(f"""
                     **Deteksi {i+1}:**
                     - 🏷️ Kategori: `{mapped_label}`
+                    - 🔖 Kelas Asli: `{original_label}`
                     - 📊 Confidence: `{conf:.2%}`
                     - 📍 Koordinat: `x1={coords[0]:.0f}, y1={coords[1]:.0f}, x2={coords[2]:.0f}, y2={coords[3]:.0f}`
                     """)
-                    # Hidden info for debugging: {original_label}
         else:
             st.warning("⚠️ Tidak ada sampah terdeteksi dalam gambar")
             st.info("💡 Coba ambil foto lagi dengan objek yang lebih jelas")
@@ -241,18 +247,14 @@ elif mode == "🖼️ Upload Gambar":
         # Run detection
         with st.spinner("🔍 Mendeteksi sampah..."):
             results = model(img_array, conf=confidence, verbose=False)
-            
-            # Draw detections with mapped labels
-            annotated_img = draw_detections_with_mapping(
-                img_array, results, model, show_original_class
-            )
+            annotated_img = results[0].plot()
             
             # Get detection info
             detections = results[0].boxes
         
         with col2:
             st.markdown("#### ✅ Hasil Deteksi")
-            st.image(annotated_img, channels="RGB", use_container_width=True)
+            st.image(annotated_img, channels="BGR", use_container_width=True)
         
         # Show detection details
         st.markdown("---")
@@ -290,11 +292,19 @@ elif mode == "🖼️ Upload Gambar":
                 mapped_label = map_class(original_label)
                 
                 with cols[i % 4]:
-                    st.metric(
-                        label=f"Objek {i+1}",
-                        value=mapped_label,
-                        delta=f"{conf:.1%}"
-                    )
+                    if show_original_class:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}",
+                            help=f"Kelas asli: {original_label}"
+                        )
+                    else:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}"
+                        )
             
             # Summary
             st.success(f"✅ Terdeteksi **{len(detections)} objek sampah**")
@@ -307,8 +317,7 @@ elif mode == "🖼️ Upload Gambar":
                     original_label = model.names[cls]
                     mapped_label = map_class(original_label)
                     
-                    st.markdown(f"**{i+1}.** {mapped_label} — Confidence: {conf:.2%}")
-                    # Hidden: {original_label}
+                    st.markdown(f"**{i+1}.** {mapped_label} ({original_label}) — Confidence: {conf:.2%}")
         else:
             st.warning("⚠️ Tidak ada sampah terdeteksi")
 
