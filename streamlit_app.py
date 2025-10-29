@@ -26,6 +26,68 @@ def map_class(original_class):
     """Map original class to simplified category"""
     return CLASS_MAPPING.get(original_class, original_class)
 
+def draw_detections_with_mapping(img_array, results, model, show_original=False):
+    """Draw bounding boxes with mapped class labels"""
+    img = img_array.copy()
+    detections = results[0].boxes
+    
+    for box in detections:
+        # Get detection info
+        cls = int(box.cls[0])
+        conf = float(box.conf[0])
+        original_label = model.names[cls]
+        mapped_label = map_class(original_label)
+        
+        # Get coordinates
+        x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
+        
+        # Choose color based on mapped category
+        if mapped_label == 'Non_Organics':
+            color = (0, 165, 255)  # Orange
+        elif mapped_label == 'Organics_NonEco':
+            color = (0, 255, 0)  # Green
+        elif mapped_label == 'Organics_Eco':
+            color = (0, 255, 255)  # Yellow
+        else:
+            color = (255, 0, 0)  # Blue (default)
+        
+        # Draw bounding box
+        cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+        
+        # Prepare label text
+        if show_original:
+            label_text = f"{mapped_label} ({original_label}) {conf:.2f}"
+        else:
+            label_text = f"{mapped_label} {conf:.2f}"
+        
+        # Calculate text size and position
+        (text_width, text_height), baseline = cv2.getTextSize(
+            label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1
+        )
+        
+        # Draw label background
+        cv2.rectangle(
+            img,
+            (x1, y1 - text_height - baseline - 5),
+            (x1 + text_width, y1),
+            color,
+            -1
+        )
+        
+        # Draw label text
+        cv2.putText(
+            img,
+            label_text,
+            (x1, y1 - baseline - 2),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            1,
+            cv2.LINE_AA
+        )
+    
+    return img
+
 # ====== Load Model ======
 @st.cache_resource
 def load_model():
@@ -298,7 +360,7 @@ st.markdown(
     """
     <div style='text-align: center; padding: 1rem;'>
         <p style='color: #666;'>
-            Made by Ecozyne Team Development 🚀 | Built with ❤️ 
+            Powered by YOLOv8 🚀 | Built with ❤️ using Streamlit
         </p>
     </div>
     """,
