@@ -33,7 +33,8 @@ WASTE_RECOMMENDATIONS = {
             '♻️ Gunakan kembali jika memungkinkan',
             '🗑️ Buang ke tempat sampah non-organik',
             '🏪 Pertimbangkan untuk didaur ulang'
-        ]
+        ],
+        'has_button': False
     },
     'Organics_NonEco': {
         'icon': '🌱',
@@ -44,7 +45,8 @@ WASTE_RECOMMENDATIONS = {
             '♻️ Dapat diolah menjadi kompos',
             '🪴 Gunakan untuk tanaman di rumah',
             '🗑️ Buang ke tempat sampah organik'
-        ]
+        ],
+        'has_button': False
     },
     'Organics_Eco': {
         'icon': '🧪',
@@ -55,7 +57,10 @@ WASTE_RECOMMENDATIONS = {
             '🏦 Setorkan ke bank sampah terdekat',
             '♻️ Dapat diolah menjadi produk ramah lingkungan',
             '💚 Bernilai ekonomis untuk daur ulang'
-        ]
+        ],
+        'has_button': True,
+        'button_text': '🗺️ Cari Bank Sampah Terdekat',
+        'button_url': 'https://ecozyne.it.com/bank_sampah'
     }
 }
 
@@ -148,6 +153,18 @@ def display_waste_recommendations(category_counts):
                 for idx, rec in enumerate(recommendation['recommendations']):
                     with cols[idx]:
                         st.info(rec)
+                
+                # Add button for categories that have it
+                if recommendation.get('has_button', False):
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    with col2:
+                        st.link_button(
+                            recommendation['button_text'],
+                            recommendation['button_url'],
+                            use_container_width=True,
+                            type="primary"
+                        )
 
 # ====== Load Model ======
 @st.cache_resource
