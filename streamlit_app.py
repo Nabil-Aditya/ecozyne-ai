@@ -100,8 +100,10 @@ with st.spinner("🔄 Loading model..."):
 st.success("✅ Model berhasil dimuat!")
 
 # ====== Pengaturan ======
+st.sidebar.header("⚙️ Pengaturan Deteksi")
 confidence = 0.25  # Fixed confidence threshold
-show_original_class = False  # Always show mapped class only
+
+show_original_class = st.sidebar.checkbox("Tampilkan Kelas Asli", value=False)
 
 # ====== Mode Selection ======
 mode = st.radio(
@@ -137,18 +139,14 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
         # Run detection
         with st.spinner("🔍 Mendeteksi sampah..."):
             results = model(img_array, conf=confidence, verbose=False)
-            
-            # Draw detections with mapped labels
-            annotated_img = draw_detections_with_mapping(
-                img_array, results, model, show_original_class
-            )
+            annotated_img = results[0].plot()
             
             # Get detection info
             detections = results[0].boxes
         
         with col2:
             st.markdown("#### ✅ Hasil Deteksi")
-            st.image(annotated_img, channels="RGB", use_container_width=True)
+            st.image(annotated_img, channels="BGR", use_container_width=True)
         
         # Show detection details
         st.markdown("---")
@@ -249,18 +247,14 @@ elif mode == "🖼️ Upload Gambar":
         # Run detection
         with st.spinner("🔍 Mendeteksi sampah..."):
             results = model(img_array, conf=confidence, verbose=False)
-            
-            # Draw detections with mapped labels
-            annotated_img = draw_detections_with_mapping(
-                img_array, results, model, show_original_class
-            )
+            annotated_img = results[0].plot()
             
             # Get detection info
             detections = results[0].boxes
         
         with col2:
             st.markdown("#### ✅ Hasil Deteksi")
-            st.image(annotated_img, channels="RGB", use_container_width=True)
+            st.image(annotated_img, channels="BGR", use_container_width=True)
         
         # Show detection details
         st.markdown("---")
