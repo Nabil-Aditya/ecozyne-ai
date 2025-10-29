@@ -22,9 +22,50 @@ CLASS_MAPPING = {
     'Organics_Eco': 'Organics_Eco',
 }
 
+# ====== Waste Management Recommendations ======
+WASTE_RECOMMENDATIONS = {
+    'Non_Organics': {
+        'icon': '♻️',
+        'title': 'Sampah Non-Organik',
+        'color': '#FF6B35',
+        'recommendations': [
+            '🔄 Kurangi penggunaan',
+            '♻️ Gunakan kembali jika memungkinkan',
+            '🗑️ Buang ke tempat sampah non-organik',
+            '🏪 Pertimbangkan untuk didaur ulang'
+        ]
+    },
+    'Organics_NonEco': {
+        'icon': '🌱',
+        'title': 'Sampah Organik Non-Eco',
+        'color': '#4CAF50',
+        'recommendations': [
+            '🌿 Sampah ini bisa dijadikan pupuk',
+            '♻️ Dapat diolah menjadi kompos',
+            '🪴 Gunakan untuk tanaman di rumah',
+            '🗑️ Buang ke tempat sampah organik'
+        ]
+    },
+    'Organics_Eco': {
+        'icon': '🧪',
+        'title': 'Sampah Organik Eco',
+        'color': '#FFD700',
+        'recommendations': [
+            '🧪 Sampah ini dapat membentuk eco enzyme',
+            '🏦 Setorkan ke bank sampah terdekat',
+            '♻️ Dapat diolah menjadi produk ramah lingkungan',
+            '💚 Bernilai ekonomis untuk daur ulang'
+        ]
+    }
+}
+
 def map_class(original_class):
     """Map original class to simplified category"""
     return CLASS_MAPPING.get(original_class, original_class)
+
+def get_waste_recommendation(category):
+    """Get waste management recommendation for a category"""
+    return WASTE_RECOMMENDATIONS.get(category, None)
 
 def draw_detections_with_mapping(img_array, results, model, show_original=False):
     """Draw bounding boxes with mapped class labels"""
@@ -87,6 +128,26 @@ def draw_detections_with_mapping(img_array, results, model, show_original=False)
         )
     
     return img
+
+def display_waste_recommendations(category_counts):
+    """Display waste management recommendations based on detected categories"""
+    st.markdown("---")
+    st.markdown("### 💡 Rekomendasi Pengelolaan Sampah")
+    
+    for category, count in category_counts.items():
+        recommendation = get_waste_recommendation(category)
+        if recommendation:
+            with st.container():
+                st.markdown(f"""
+                <div style='background-color: {recommendation['color']}22; padding: 1.5rem; border-radius: 10px; border-left: 5px solid {recommendation['color']}; margin-bottom: 1rem;'>
+                    <h4 style='margin-top: 0;'>{recommendation['icon']} {recommendation['title']} ({count} objek terdeteksi)</h4>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                cols = st.columns(len(recommendation['recommendations']))
+                for idx, rec in enumerate(recommendation['recommendations']):
+                    with cols[idx]:
+                        st.info(rec)
 
 # ====== Load Model ======
 @st.cache_resource
@@ -198,6 +259,9 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
                             delta=f"{conf:.1%}"
                         )
             
+            # Display waste management recommendations
+            display_waste_recommendations(category_counts)
+            
             # Detailed table
             with st.expander("📋 Lihat Detail Lengkap"):
                 for i, box in enumerate(detections):
@@ -306,6 +370,9 @@ elif mode == "🖼️ Upload Gambar":
                             delta=f"{conf:.1%}"
                         )
             
+            # Display waste management recommendations
+            display_waste_recommendations(category_counts)
+            
             # Summary
             st.success(f"✅ Terdeteksi **{len(detections)} objek sampah**")
             
@@ -341,6 +408,11 @@ with st.expander("ℹ️ Informasi & Bantuan"):
     - **Non_Organics**: Metal, Paper, Glass, Plastic, Textile, Cardboard, Miscellaneous
     - **Organics_NonEco**: Vegetation, Food
     - **Organics_Eco**: Eco-friendly organic waste
+    
+    ### 💡 Rekomendasi Pengelolaan:
+    - **Sampah Non-Organik**: Kurangi, gunakan kembali, daur ulang
+    - **Sampah Organik Non-Eco**: Dapat dijadikan pupuk dan kompos
+    - **Sampah Organik Eco**: Dapat membentuk eco enzyme, setorkan ke bank sampah
     
     ### ⚙️ Tips untuk Hasil Terbaik:
     - 💡 Gunakan pencahayaan yang cukup
