@@ -360,7 +360,7 @@ st.markdown(
     """
     <div style='text-align: center; padding: 1rem;'>
         <p style='color: #666;'>
-            Powered by YOLOv8 🚀 | Built with ❤️ using Streamlit
+            Made by Ecozyne Team Development 🚀 | Built with ❤️
         </p>
     </div>
     """,
