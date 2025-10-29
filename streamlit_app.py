@@ -100,10 +100,10 @@ with st.spinner("🔄 Loading model..."):
 st.success("✅ Model berhasil dimuat!")
 
 # ====== Pengaturan ======
-st.sidebar.header("⚙️ Ecozyne AI")
-#confidence = 0.25  # Fixed confidence threshold
+st.sidebar.header("⚙️ Pengaturan Deteksi")
+confidence = 0.25  # Fixed confidence threshold
 
-#show_original_class = st.sidebar.checkbox("Tampilkan Kelas Asli", value=False)
+show_original_class = st.sidebar.checkbox("Tampilkan Kelas Asli", value=False)
 
 # ====== Mode Selection ======
 mode = st.radio(
