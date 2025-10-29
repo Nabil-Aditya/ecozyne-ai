@@ -8,6 +8,24 @@ st.set_page_config(page_title="Deteksi Sampah YOLO", layout="wide")
 
 st.title("♻️ Deteksi Jenis Sampah Real-time (YOLOv8)")
 
+# ====== Class Mapping ======
+CLASS_MAPPING = {
+    'Non_Organics_Metal': 'Non_Organics',
+    'Non_Organics_Paper': 'Non_Organics',
+    'Non_Organics_Glass': 'Non_Organics',
+    'Non_Organics_Plastic': 'Non_Organics',
+    'Non_Organics_Textile': 'Non_Organics',
+    'Non_Organics_Miscellaneous': 'Non_Organics',
+    'Non_Organics_Cardboard': 'Non_Organics',
+    'Organics_Vegetation': 'Organics_NonEco',
+    'Organics_Food': 'Organics_NonEco',
+    'Organics_Eco': 'Organics_Eco',
+}
+
+def map_class(original_class):
+    """Map original class to simplified category"""
+    return CLASS_MAPPING.get(original_class, original_class)
+
 # ====== Load Model ======
 @st.cache_resource
 def load_model():
@@ -21,13 +39,9 @@ st.success("✅ Model berhasil dimuat!")
 
 # ====== Pengaturan ======
 st.sidebar.header("⚙️ Pengaturan Deteksi")
-confidence = st.sidebar.slider(
-    "Confidence Threshold",
-    min_value=0.0,
-    max_value=1.0,
-    value=0.25,
-    step=0.05
-)
+confidence = 0.25  # Fixed confidence threshold
+
+show_original_class = st.sidebar.checkbox("Tampilkan Kelas Asli", value=False)
 
 # ====== Mode Selection ======
 mode = st.radio(
@@ -77,32 +91,64 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
         st.markdown("### 📊 Detail Deteksi")
         
         if len(detections) > 0:
-            # Create metrics
+            # Count by mapped category
+            category_counts = {}
+            for box in detections:
+                cls = int(box.cls[0])
+                original_label = model.names[cls]
+                mapped_label = map_class(original_label)
+                category_counts[mapped_label] = category_counts.get(mapped_label, 0) + 1
+            
+            # Show category summary
+            st.markdown("#### 🎯 Ringkasan Kategori")
+            summary_cols = st.columns(len(category_counts))
+            for idx, (category, count) in enumerate(category_counts.items()):
+                with summary_cols[idx]:
+                    st.metric(
+                        label=category,
+                        value=f"{count} objek"
+                    )
+            
+            st.markdown("---")
+            
+            # Create metrics for individual detections
+            st.markdown("#### 🔍 Detail Objek Terdeteksi")
             cols = st.columns(min(len(detections), 4))
             
             for i, box in enumerate(detections):
                 cls = int(box.cls[0])
                 conf = float(box.conf[0])
-                label = model.names[cls]
+                original_label = model.names[cls]
+                mapped_label = map_class(original_label)
                 
                 with cols[i % 4]:
-                    st.metric(
-                        label=f"Objek {i+1}",
-                        value=label,
-                        delta=f"{conf:.1%}"
-                    )
+                    if show_original_class:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}",
+                            help=f"Kelas asli: {original_label}"
+                        )
+                    else:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}"
+                        )
             
             # Detailed table
             with st.expander("📋 Lihat Detail Lengkap"):
                 for i, box in enumerate(detections):
                     cls = int(box.cls[0])
                     conf = float(box.conf[0])
-                    label = model.names[cls]
+                    original_label = model.names[cls]
+                    mapped_label = map_class(original_label)
                     coords = box.xyxy[0].cpu().numpy()
                     
                     st.markdown(f"""
                     **Deteksi {i+1}:**
-                    - 🏷️ Label: `{label}`
+                    - 🏷️ Kategori: `{mapped_label}`
+                    - 🔖 Kelas Asli: `{original_label}`
                     - 📊 Confidence: `{conf:.2%}`
                     - 📍 Koordinat: `x1={coords[0]:.0f}, y1={coords[1]:.0f}, x2={coords[2]:.0f}, y2={coords[3]:.0f}`
                     """)
@@ -153,20 +199,50 @@ elif mode == "🖼️ Upload Gambar":
         st.markdown("### 📊 Detail Deteksi")
         
         if len(detections) > 0:
-            # Create metrics
+            # Count by mapped category
+            category_counts = {}
+            for box in detections:
+                cls = int(box.cls[0])
+                original_label = model.names[cls]
+                mapped_label = map_class(original_label)
+                category_counts[mapped_label] = category_counts.get(mapped_label, 0) + 1
+            
+            # Show category summary
+            st.markdown("#### 🎯 Ringkasan Kategori")
+            summary_cols = st.columns(len(category_counts))
+            for idx, (category, count) in enumerate(category_counts.items()):
+                with summary_cols[idx]:
+                    st.metric(
+                        label=category,
+                        value=f"{count} objek"
+                    )
+            
+            st.markdown("---")
+            
+            # Create metrics for individual detections
+            st.markdown("#### 🔍 Detail Objek Terdeteksi")
             cols = st.columns(min(len(detections), 4))
             
             for i, box in enumerate(detections):
                 cls = int(box.cls[0])
                 conf = float(box.conf[0])
-                label = model.names[cls]
+                original_label = model.names[cls]
+                mapped_label = map_class(original_label)
                 
                 with cols[i % 4]:
-                    st.metric(
-                        label=f"Objek {i+1}",
-                        value=label,
-                        delta=f"{conf:.1%}"
-                    )
+                    if show_original_class:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}",
+                            help=f"Kelas asli: {original_label}"
+                        )
+                    else:
+                        st.metric(
+                            label=f"Objek {i+1}",
+                            value=mapped_label,
+                            delta=f"{conf:.1%}"
+                        )
             
             # Summary
             st.success(f"✅ Terdeteksi **{len(detections)} objek sampah**")
@@ -176,9 +252,10 @@ elif mode == "🖼️ Upload Gambar":
                 for i, box in enumerate(detections):
                     cls = int(box.cls[0])
                     conf = float(box.conf[0])
-                    label = model.names[cls]
+                    original_label = model.names[cls]
+                    mapped_label = map_class(original_label)
                     
-                    st.markdown(f"**{i+1}.** {label} — Confidence: {conf:.2%}")
+                    st.markdown(f"**{i+1}.** {mapped_label} ({original_label}) — Confidence: {conf:.2%}")
         else:
             st.warning("⚠️ Tidak ada sampah terdeteksi")
 
@@ -198,6 +275,11 @@ with st.expander("ℹ️ Informasi & Bantuan"):
     - Upload gambar dari galeri/file
     - Sistem akan mendeteksi semua sampah dalam gambar
     
+    ### 🏷️ Kategori Sampah:
+    - **Non_Organics**: Metal, Paper, Glass, Plastic, Textile, Cardboard, Miscellaneous
+    - **Organics_NonEco**: Vegetation, Food
+    - **Organics_Eco**: Eco-friendly organic waste
+    
     ### ⚙️ Tips untuk Hasil Terbaik:
     - 💡 Gunakan pencahayaan yang cukup
     - 📏 Jarak objek tidak terlalu jauh
@@ -216,7 +298,7 @@ st.markdown(
     """
     <div style='text-align: center; padding: 1rem;'>
         <p style='color: #666;'>
-            Powered by YOLOv8 🚀 | Built with ❤️ using Streamlit
+            Made by Ecozyne Team Development 🚀 | Built with ❤️ 
         </p>
     </div>
     """,
