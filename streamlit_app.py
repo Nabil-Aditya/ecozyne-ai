@@ -6,7 +6,7 @@ import cv2
 
 st.set_page_config(page_title="Deteksi Sampah YOLO", layout="wide")
 
-st.title("♻️ Deteksi Jenis Sampah (YOLOv8)")
+st.title("♻️ AI ECO ENZYME")
 
 # ====== Class Mapping ======
 CLASS_MAPPING = {
@@ -178,10 +178,10 @@ with st.spinner("🔄 Loading model..."):
 st.success("✅ Model berhasil dimuat!")
 
 # ====== Pengaturan ======
-st.sidebar.header("⚙️ Pengaturan Deteksi")
+st.sidebar.header("⚙️ AI KLASIFIKASI")
 confidence = 0.25  # Fixed confidence threshold
 
-show_original_class = st.sidebar.checkbox("Tampilkan Kelas Asli", value=False)
+show_original_class = st.sidebar.checkbox("Klasifikasi Sampah", value=False)
 
 # ====== Mode Selection ======
 mode = st.radio(
@@ -195,7 +195,7 @@ st.markdown("---")
 # ====== MODE 1: Camera Snapshot ======
 if mode == "📸 Snapshot Mode (Ambil Foto)":
     st.subheader("📸 Ambil Foto dari Kamera")
-    st.info("💡 Klik tombol kamera di bawah untuk mengambil foto, lalu deteksi akan otomatis berjalan")
+    st.info("💡 Klik tombol kamera di bawah untuk mengambil foto, lalu AI akan otomatis berjalan")
     
     # Enable continuous detection
     enable_continuous = st.checkbox("🔄 Mode Continuous (auto-refresh setiap foto)")
@@ -223,12 +223,12 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
             detections = results[0].boxes
         
         with col2:
-            st.markdown("#### ✅ Hasil Deteksi")
+            st.markdown("#### ✅ Hasil Klasifikasi")
             st.image(annotated_img, channels="BGR", use_container_width=True)
         
         # Show detection details
         st.markdown("---")
-        st.markdown("### 📊 Detail Deteksi")
+        st.markdown("### 📊 Detail Klasifikasi")
         
         if len(detections) > 0:
             # Count by mapped category
@@ -306,7 +306,7 @@ if mode == "📸 Snapshot Mode (Ambil Foto)":
 
 # ====== MODE 2: Upload Image ======
 elif mode == "🖼️ Upload Gambar":
-    st.subheader("🖼️ Upload Gambar untuk Deteksi")
+    st.subheader("🖼️ Upload Gambar untuk Klasifikasi")
     
     uploaded_file = st.file_uploader(
         "Pilih gambar (JPG, JPEG, PNG)",
@@ -334,12 +334,12 @@ elif mode == "🖼️ Upload Gambar":
             detections = results[0].boxes
         
         with col2:
-            st.markdown("#### ✅ Hasil Deteksi")
+            st.markdown("#### ✅ Hasil Klasifikasi")
             st.image(annotated_img, channels="BGR", use_container_width=True)
         
         # Show detection details
         st.markdown("---")
-        st.markdown("### 📊 Detail Deteksi")
+        st.markdown("### 📊 Detail Klasifikasi")
         
         if len(detections) > 0:
             # Count by mapped category
@@ -419,7 +419,7 @@ with st.expander("ℹ️ Informasi & Bantuan"):
     
     **Mode Upload:**
     - Upload gambar dari galeri/file
-    - Sistem akan mendeteksi semua sampah dalam gambar
+    - Sistem akan mendeteksi sampah dalam gambar
     
     ### 🏷️ Kategori Sampah:
     - **Non_Organics**: Metal, Paper, Glass, Plastic, Textile, Cardboard, Miscellaneous
