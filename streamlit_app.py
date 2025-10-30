@@ -415,7 +415,6 @@ with st.expander("ℹ️ Informasi & Bantuan"):
     **Mode Snapshot:**
     - Klik tombol kamera untuk mengambil foto
     - Sistem akan otomatis mendeteksi sampah
-    - Aktifkan "Mode Continuous" untuk deteksi berulang
     
     **Mode Upload:**
     - Upload gambar dari galeri/file
