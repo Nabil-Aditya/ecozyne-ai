@@ -6,7 +6,7 @@ import cv2
 
 st.set_page_config(page_title="Deteksi Sampah YOLO", layout="wide")
 
-st.title("♻️ Deteksi Jenis Sampah Real-time (YOLOv8)")
+st.title("♻️ Deteksi Jenis Sampah (YOLOv8)")
 
 # ====== Class Mapping ======
 CLASS_MAPPING = {
