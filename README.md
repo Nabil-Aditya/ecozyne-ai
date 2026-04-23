@@ -1,19 +1,13 @@
-# :earth_americas: GDP dashboard template
+# 🌿 Ecozyne AI: Cerdas Klasifikasi Sampah untuk Eco-Enzim
 
-A simple Streamlit app showing the GDP of different countries in the world.
+![License](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+![Framework](https://img.shields.io/badge/framework-TensorFlow%20%2F%20Keras-orange)
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gdp-dashboard-template.streamlit.app/)
+**Ecozyne AI** adalah sistem berbasis kecerdasan buatan (Computer Vision) yang dirancang untuk membantu masyarakat mengidentifikasi jenis sampah organik yang tepat untuk pembuatan **Eco-Enzim**. Dengan teknologi ini, proses pemilahan sampah menjadi lebih akurat, cepat, dan edukatif.
 
-### How to run it on your own machine
+---
 
-1. Install the requirements
+## 🚀 Fitur Utama
 
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+* **Klasifikasi Real-time**: Mendeteksi berbagai jenis sisa buah dan sayuran melalui kamera atau unggahan gambar.
